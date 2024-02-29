@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="rgb(0, 0, 0)" />
+    <title>Dictionnaire</title>
+    <link rel="stylesheet" type="text/css" href="KAI/KAI.css" />
+    <link href="KAI/fontawesome/css/all.css" rel="stylesheet">
+	  <script src="KAI/jquery-3.5.1.min.js"></script>
+    <script src="KAI/mustache.js"></script>
+    <script src="KAI/KAI.js"></script>
+    <script src="KAI/KAI_choiceList.js"></script>
+
+    <!-- App specific Javascript -->
+    <link rel="stylesheet" type="text/css" href="myApp/app.css" />
+    <link rel="stylesheet" type="text/css" href="myApp/icons/flags/css/flag-icons.min.css" />
+    <script src="myApp/key.js"></script>
+    <script src="myApp/meteo.js"></script>
+	  <script src="myApp/app.js"></script>
+    <!-- End App specific        -->
+
+  </head>
+
+  <body>
+
+    <div id="toastr" class="init">
+      <div id="toastrMsg">Essai de message</div>
+    </div>
+
+    <div id="KAI_spinner" class="KAI_app_height">
+      <center>
+        <i class="fas fa-cog fa-spin"></i><br/>
+        <span id="KAI_spinnerText"></span>
+      </center>
+    </div>
+
+    <div>
+		  <header id="KAI_header">
+			  <span id="KAI_appTitle"></span><br/>
+		  </header>
+
+      <div id="KAI_app" class="KAI_app_height">
+
+        <!-- App specific Javascript -->
+  		  <div id="meteo">
+
+          <div id="dateLabel"></div>
+
+          <div id="meteo_page1">
+          </div>
+
+          <div id="meteo_page2">
+          </div>
+
+  		  </div>
+
+        <div id="meteo_page2">
+  			  meteo2
+  		  </div>
+
+  		  <div id="citiesList" class="KAI_app_height">
+          citiesList
+  		  </div>
+
+        <div id="addCity" class="KAI_app_height">
+          addCity
+  		  </div>
+
+        <div id="actions" class="KAI_app_height">
+          actions
+  		  </div>
+        <!-- End App specific        -->
+
+      </div>
+    </div>
+
+		<div id="softkeys">
+			<label id="SoftLeft"></label>
+			<label id="Center"></label>
+			<label id="SoftRight"></label>
+		</div>
+
+  </body>
+</html>

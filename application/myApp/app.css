@@ -1,0 +1,97 @@
+/*
+L'écran fait 240x320 pixels.
+1) Avec la partie status Kaios :
+- la partie status Kaios fait 25 px de haut
+- La partie "App" fait 265 px de haut,
+    - Le header, c'est à dire l'en tête de l'application fait 20 pixels de haut,
+    - le reste fait donc 245 px de haut
+- Les sofkeys font 30 px de haut
+
+2) en Full screen :
+- La partie "App" fait 290 px de haut,
+- Les sofkeys font 30 px de haut
+*/
+
+
+/* Date label ------------- */
+
+#dateLabel {
+	color: #313131;
+	display: flex;
+	font-weight :bold;
+	justify-content: center;
+	margin-top:5px;
+}
+
+/* Forecast display */
+
+#meteo_page1,#meteo_page2 {display:table;margin-top:5px;color:#000000;font-size: 16px;}
+.row {display:table-row;padding-left:2px;padding-right:2px;min-height:22px;min-height:23px;}
+.cell{display:table-cell;padding-left:2px;padding-right:2px;}
+.cellData {display:table-cell;padding-left:2px;padding-right:2px;}
+
+/* For temperature background */
+.t-12 	{background-color:#0265ff;}
+.t-11 	{background-color:#0265ff;}
+.t-10 	{background-color:#0265ff;}
+.t-9 	{background-color:#0265ff;}
+
+.t-8 	{background-color:#099bff;}
+.t-7 	{background-color:#099bff;}
+.t-6 	{background-color:#099bff;}
+.t-5 	{background-color:#099bff;}
+
+.t-4 	{background-color:#3ac5fc;}
+.t-3 	{background-color:#3ac5fc;}
+.t-2 	{background-color:#3ac5fc;}
+.t-1 	{background-color:#3ac5fc;}
+
+.t0 	{background-color:#65fff8;}
+.t1 	{background-color:#65fff8;}
+.t2 	{background-color:#65fff8;}
+.t3 	{background-color:#65fff8;}
+
+.t4 	{background-color:#60fd68;}
+.t5 	{background-color:#60fd68;}
+.t6 	{background-color:#60fd68;}
+.t7 	{background-color:#60fd68;}
+
+.t8 	{background-color:#67fe00;}
+.t9 	{background-color:#67fe00;}
+.t10 	{background-color:#67fe00;}
+.t11 	{background-color:#67fe00;}
+
+.t12 	{background-color:#bffa08;}
+.t13 	{background-color:#bffa08;}
+.t14	{background-color:#bffa08;}
+.t15 	{background-color:#bffa08;}
+
+.t16 	{background-color:#fffd07;}
+.t17	{background-color:#fffd07;}
+.t18 	{background-color:#fffd07;}
+.t19	{background-color:#fffd07;}
+
+.t20 	{background-color:#fbd008;}
+.t21	{background-color:#fbd008;}
+.t22 	{background-color:#fbd008;}
+.t23	{background-color:#fbd008;}
+
+.t24 	{background-color:#ff9b00;}
+.t25	{background-color:#ff9b00;}
+.t26 	{background-color:#ff9b00;}
+.t27	{background-color:#ff9b00;}
+
+.t28 	{background-color:#fb6705;}
+.t29	{background-color:#fb6705;}
+.t30 	{background-color:#fb6705;}
+.t31	{background-color:#fb6705;}
+
+.t32 	{background-color:#ff322e;}
+.t33	{background-color:#ff322e;}
+.t34 	{background-color:#ff322e;}
+.t35	{background-color:#ff322e;}
+
+/* For wind strength */
+.wGreen		{color:green;}
+.wOrange	{color:orange;font-weight:bold;}
+.wRed		{color:red;font-weight:bold;}

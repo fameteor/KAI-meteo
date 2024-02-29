@@ -1,0 +1,175 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+div#KAI_app {
+  /* 265px if fullscreen or 235px */
+  font-family: "Open Sans", sans-serif;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width:100%;
+  background-color: #ffffff !important;
+}
+
+/* HEADER ----------------- */
+
+header#KAI_header {
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #03af30;
+  color:#000000;
+  padding: 3px 10px;
+}
+
+header span {
+  font-size: 16px;
+  color: #000000;
+}
+
+/* SOFTKEYS */
+
+#softkeys {
+  height: 30px;
+  max-height: 30px;
+  width: 100%;
+  max-width: 100%;
+  background: #c5cac5;
+  display: flex;
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 0 5px;
+  font-weight: 700;
+  box-sizing: border-box;
+  line-height: 26px;
+  margin-top: auto;
+  position: absolute;
+  bottom: 0;
+}
+
+#SoftLeft,
+#SoftRight {
+  font-size: 14px;
+  color: #313131;
+  width: 100%;
+}
+
+#SoftLeft {
+  text-align: left;
+  padding-right: 5px;
+}
+
+#Center {
+  color: #313131;
+  font-size: 14px;
+  width: 100%;
+}
+
+#SoftRight {
+  text-align: right;
+  padding-left: 5px;
+}
+
+/* Spinner */
+div#KAI_spinner {
+  position : absolute;
+	top:20px;
+	left:0;
+  width:100%;
+  z-index: 70;
+  background-color: #888888;
+  opacity:.9;
+
+}
+div#KAI_spinner i{
+  color:#FFFFFF;
+  margin-top:100px;
+  font-size: 60px;
+}
+
+span#KAI_spinnerText {
+  font-size: 14px;
+  color:#FFFFFF;
+  opacity:1;
+}
+
+/* TOASTR like */
+
+div#toastr {
+	position : absolute;
+	top:50;
+	left:0;
+	width :  calc(100% - 10px);
+	padding:10px;
+	margin:5px;
+	background-color : rgb(0, 0, 128);
+	color: #FFFFFF;
+	z-index: 101;
+	border-radius: 5px;
+}
+
+div#toastr i {
+  font-size: 2rem;
+}
+
+div#toastr.hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 2s, opacity 2s linear;
+}
+
+div#toastr.init {
+  visibility: hidden;
+  opacity: 0;
+}
+
+div#toastr.visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* For lists */
+tr.list {
+	background-color : #EEEEEE;
+	border-top:1px solid #AAAAAA;
+	color:#000080;
+	padding: 5px;
+	font-weight: 400;
+	font-size: 1rem;
+}
+
+tr.list.active {
+	background-color : #03af30;
+	color:#000000;
+}
+
+tr.list label {
+	display: inline-block;
+}
+
+td.list {
+	height:70px;
+	padding: 5px;
+}
+
+table {
+	border-spacing : 0;
+	border-collapse : collapse;
+	border: none;
+	padding:0;
+	width:100%;
+}
+
+
+/* small letters */
+.info {
+	font-weight: 400;
+	font-size: 0.7rem;
+}
+
+.text-center {text-align:center;}

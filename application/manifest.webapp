@@ -1,0 +1,24 @@
+{
+  "version": "0.0.1",
+  "name": "Météo",
+  "description": "Météo",
+  "type": "privileged",
+  "permissions": {"systemXHR": {}},
+  "launch_path": "/index.html",
+  "icons": {
+    "56": "/myApp/icons/meteo_56.png",
+    "112": "/myApp/icons/meteo_112.png"
+  },
+  "developer": {
+    "name": "KaiOS Team",
+    "url": "https://www.kaiostech.com"
+  },
+  "locales": {
+    "fr-FR": {
+      "name": "Météo",
+      "subtitle": "Météo",
+      "description": "Météo"
+    }
+  },
+  "default_locale": "fr-FR"
+}

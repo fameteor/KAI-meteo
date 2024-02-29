@@ -29,6 +29,7 @@ L'écran fait 240x320 pixels.
 .row {display:table-row;padding-left:2px;padding-right:2px;min-height:22px;min-height:23px;}
 .cell{display:table-cell;padding-left:2px;padding-right:2px;}
 .cellData {display:table-cell;padding-left:2px;padding-right:2px;}
+.cell-center {align:center;}
 
 /* For temperature background */
 .t-12 	{background-color:#0265ff;}

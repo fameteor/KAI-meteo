@@ -252,19 +252,31 @@ const meteo_render = function(forecastData) {
   // We built the mustache template
   const template_page1 = `
     {{#.}}
-    <div class="row">
-				<div class="cell">{{hour}}h</div>
-        <div class="cell"><img src="myApp/icons/{{cloudIcon}}" style="height:70%;width:70%;"/></div>
-        <div class="cellData t{{temperature}}">{{temperature}}<small> °C</small></div>
-        <div class="cell" style="text-align:right;">{{rain}}<small> mm</small></div>
-        <div class="cell"><span class="{{windClass}}">{{meanWind}}</span>/<small><span class="{{windMaxClass}}">{{maxWind}}</span> km/h</small></div>
-    </div>
+      <div class="row">
+  				<div class="cell">{{hour}}h</div>
+          <div class="cell"><img src="myApp/icons/{{cloudIcon}}" style="height:70%;width:70%;"/></div>
+          <div class="cellData t{{temperature}}">{{temperature}}<small> °C</small></div>
+          <div class="cell" style="text-align:right;">{{rain}}<small> mm</small></div>
+          <div class="cell"><span class="{{windClass}}">{{meanWind}}</span>/<small><span class="{{windMaxClass}}">{{maxWind}}</span> km/h</small></div>
+      </div>
     {{/.}}
+    <center><i class="fas fa-chevron-circle-down"></i></center>
   `;
+  const template_page2 = `
+    <center><i class="fas fa-chevron-circle-up"></i></center>
+    {{#.}}
+      <div class="row">
+  		  <div class="cell">{{hour}}h</div>
+  			<div class="cell">{{humidity}}<small> %</small></div>
+  			<div class="cell">{{pressure}}<small> hPa</small></div>
+  			<div class="cell">{{cloudiness}}<small>%</small></div>
+  	  </div>
+    {{/.}}`
   // We apply data to it if available
   if (forecastData[dayIndex] && forecastData[dayIndex].timesStructure) {
-    const html = mustache.render(template_page1,forecastData[dayIndex].timesStructure);
-    $("#meteo_page1").html(html);
+    // const html = mustache.render(template_page1,forecastData[dayIndex].timesStructure);
+    $("#meteo_page1").html(mustache.render(template_page1,forecastData[dayIndex].timesStructure));
+    $("#meteo_page2").html(mustache.render(template_page2,forecastData[dayIndex].timesStructure));
     $("#dateLabel").html(forecastData[dayIndex].dateLabel);
   };
 }

@@ -27,7 +27,7 @@ const displayMeteoForSelectedCity = function() {
 
 
 // -----------------------------------------------
-// States meteo
+// States meteo_page1
 // -----------------------------------------------
 KAI.addState("meteo_page1", {
   softKeys : {fr : ['< date','< ville >','date >']},
@@ -40,7 +40,58 @@ KAI.addState("meteo_page1", {
     'div#actions': false
   },
   afterStateChange : function() {
-		displayMeteoForSelectedCity();
+
+		/*
+    dictionnaries.generateHtml();
+    // After 200 ms we select the searchWord input field
+    setTimeout(() => {
+      document.getElementById("searchWord").select();
+    }, 200);
+		*/
+  },
+	events : {
+		'keyup.ArrowDown': function(event) {
+			KAI.newState('meteo_page2');
+		},
+		'keyup.ArrowLeft': function(event) {
+			// We select the previous city and display the title
+			citiesList.previous();
+			displayMeteoForSelectedCity();
+		},
+		'keyup.ArrowRight': function(event) {
+			// We select the next city and display the title
+			citiesList.next();
+			displayMeteoForSelectedCity();
+		},
+		'keyup.SoftLeft': function(event) {
+
+		},
+		'keyup.Enter': function(event) {
+      KAI.newState('citiesList');
+		},
+    'keyup.SoftRight': function(event) {
+
+		},
+    'window.focus': function(event) {
+      KAI.toastr.info('démarrage');
+		}
+	}
+});
+
+// -----------------------------------------------
+// States meteo_page2
+// -----------------------------------------------
+KAI.addState("meteo_page2", {
+  softKeys : {fr : ['< date','< ville >','date >']},
+  display : {
+		'div#meteo' : true,
+    'div#meteo_page1' : false,
+		'div#meteo_page2' : true,
+    'div#citiesList': false,
+    'div#addCity': false,
+    'div#actions': false
+  },
+  afterStateChange : function() {
 		/*
     dictionnaries.generateHtml();
     // After 200 ms we select the searchWord input field
@@ -51,10 +102,7 @@ KAI.addState("meteo_page1", {
   },
 	events : {
 		'keyup.ArrowUp': function(event) {
-
-		},
-		'keyup.ArrowDown': function(event) {
-			KAI.newState('meteo_page2');
+			KAI.newState('meteo_page1');
 		},
 		'keyup.ArrowLeft': function(event) {
 			// We select the previous city and display the title
@@ -171,6 +219,7 @@ const appOptions = {
 window.onload = function() {
 	KAI.spinner.off();
   KAI.init(appOptions);
+	displayMeteoForSelectedCity();
 	KAI.newState('meteo_page1');
 };
 

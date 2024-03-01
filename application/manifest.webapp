@@ -3,7 +3,10 @@
   "name": "Météo",
   "description": "Météo",
   "type": "privileged",
-  "permissions": {"systemXHR": {}},
+  "permissions": {
+    "systemXHR": {},
+    "device-storage:sdcard":{ "access": "readwrite" }
+  },
   "launch_path": "/index.html",
   "icons": {
     "56": "/myApp/icons/meteo_56.png",

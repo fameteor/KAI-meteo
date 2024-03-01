@@ -102,7 +102,7 @@ KAI.addState("meteo_page1", {
 			meteo_render(forecastData);
 		},
     'window.focus': function(event) {
-      KAI.toastr.info('démarrage');
+      warmStartup();
 		}
 	}
 });
@@ -161,7 +161,7 @@ KAI.addState("meteo_page2", {
 			meteo_render(forecastData);
 		},
     'window.focus': function(event) {
-      KAI.toastr.info('démarrage');
+      warmStartup();
 		}
 	}
 });
@@ -194,7 +194,12 @@ KAI.addState("citiesList", {
 		}
 		,
 		'keyup.Backspace': function(event) {
-			KAI.newState('meteo');
+			event.preventDefault();
+			KAI.newState('meteo_page1');
+			event.stopPropagation();
+		},
+    'window.focus': function(event) {
+      warmStartup();
 		}
 
 	}
@@ -202,7 +207,7 @@ KAI.addState("citiesList", {
 
 
 // Dictionnaries option list creation ----------------
-const cities = [
+const defaultCities = [
 	{
 		"choiceList_label":"ici",
 		"location":"46.5891712,15.0046327",
@@ -246,18 +251,49 @@ let citiesListOptions = {
 	"targetDomSelector" : 			"#citiesList"
 }
 
-const citiesList = new KAI.choiceList(cities,citiesListOptions);
+let citiesList;
 
 // State machine initialisation ----------------------
 const appOptions = {
   KAI_appTitle: "Météo"
 };
 
-window.onload = function() {
-	KAI.spinner.off();
-  KAI.init(appOptions);
+// Cold and warm startup ----------------
+const warmStartup = function() {
+	// We come back to the first day (today)
+	dayIndex = 0;
 	displayMeteoForSelectedCity();
 	KAI.newState('meteo_page1');
+}
+
+// Cold startup
+window.onload = function() {
+	KAI.init(appOptions);
+	KAI.spinner.on("Chargement de la configuration en cours...");
+	KAI.config.readFromSD()
+    .then(function (config) {
+			KAI.spinner.off();
+			// KAI.toastr.info(JSON.stringify(config));
+			if ("cities" in config) {
+				citiesList = new KAI.choiceList(config.cities,citiesListOptions);
+				warmStartup();
+			}
+			else {
+				// We start with the default value
+				citiesList = new KAI.choiceList(defaultCities,citiesListOptions);
+				warmStartup();
+			}
+
+    })
+    .catch(function (err) {
+			KAI.spinner.off();
+      // KAI.toastr.warning(err.statusText);
+			// We start with default values
+			citiesList = new KAI.choiceList(defaultCities,citiesListOptions);
+			warmStartup();
+    });
+
+
 };
 
 console.log("app.js loaded");

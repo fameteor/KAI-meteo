@@ -1,6 +1,13 @@
 // Variables initialisation ----------------------
 let forecastData = [];
 let dayIndex = 0;
+const nextDay = function() {
+	if (dayIndex < (forecastData.length -1)) dayIndex +=1;
+}
+
+const previousDay = function() {
+	if (dayIndex !== 0)  dayIndex -=1;
+}
 
 // -----------------------------------------------
 // Global functions
@@ -25,12 +32,30 @@ const displayMeteoForSelectedCity = function() {
     });
 }
 
+// softLeftLabel
+// -----------------------------------------------
+const softLeftLabel = function() {
+	if (dayIndex === 0) return '';
+	else 								return '<i class="fas fa-chevron-left"></i> date'
+}
+
+// softRightLabel
+// -----------------------------------------------
+const softRightLabel = function() {
+	if (dayIndex === (forecastData.length -1)) return '';
+	else 								return 'date <i class="fas fa-chevron-right"></i>'
+}
+
 
 // -----------------------------------------------
 // States meteo_page1
 // -----------------------------------------------
 KAI.addState("meteo_page1", {
-  softKeys : {fr : ['< date','< ville >','date >']},
+  softKeys : {fr : [
+		softLeftLabel,
+		'<i class="fas fa-chevron-circle-left"></i> ville <i class="fas fa-chevron-circle-right"></i>',
+		softRightLabel
+	]},
   display : {
 		'div#meteo' : true,
     'div#meteo_page1' : true,
@@ -64,13 +89,17 @@ KAI.addState("meteo_page1", {
 			displayMeteoForSelectedCity();
 		},
 		'keyup.SoftLeft': function(event) {
-
+			previousDay();
+			KAI.renderSoftKeys();
+			meteo_render(forecastData);
 		},
 		'keyup.Enter': function(event) {
       KAI.newState('citiesList');
 		},
     'keyup.SoftRight': function(event) {
-
+			nextDay();
+			KAI.renderSoftKeys();
+			meteo_render(forecastData);
 		},
     'window.focus': function(event) {
       KAI.toastr.info('démarrage');
@@ -82,7 +111,11 @@ KAI.addState("meteo_page1", {
 // States meteo_page2
 // -----------------------------------------------
 KAI.addState("meteo_page2", {
-  softKeys : {fr : ['< date','< ville >','date >']},
+  softKeys : {fr : [
+		softLeftLabel,
+		'<i class="fas fa-chevron-circle-left"></i> ville <i class="fas fa-chevron-circle-right"></i>',
+		softRightLabel
+	]},
   display : {
 		'div#meteo' : true,
     'div#meteo_page1' : false,
@@ -115,13 +148,17 @@ KAI.addState("meteo_page2", {
 			displayMeteoForSelectedCity();
 		},
 		'keyup.SoftLeft': function(event) {
-
+			previousDay();
+			KAI.renderSoftKeys();
+			meteo_render(forecastData);
 		},
 		'keyup.Enter': function(event) {
       KAI.newState('citiesList');
 		},
     'keyup.SoftRight': function(event) {
-
+			nextDay();
+			KAI.renderSoftKeys();
+			meteo_render(forecastData);
 		},
     'window.focus': function(event) {
       KAI.toastr.info('démarrage');

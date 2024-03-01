@@ -151,6 +151,41 @@ let KAI = {
     }
   },
 
+
+  // -----------------------------------------------------
+  // KAI.renderSoftKeys : method to change state
+  // -----------------------------------------------------
+  renderSoftKeys: function() {
+    // Display softKeys
+    const SoftLeft =  this.states
+                      && this.states[this.currentState]
+                      && this.states[this.currentState].softKeys
+                      && this.states[this.currentState].softKeys[this.lang]
+                      && this.states[this.currentState].softKeys[this.lang][0];
+    const Center =    this.states
+                      && this.states[this.currentState]
+                      && this.states[this.currentState].softKeys
+                      && this.states[this.currentState].softKeys[this.lang]
+                      && this.states[this.currentState].softKeys[this.lang][1];
+    const SoftRight = this.states
+                      && this.states[this.currentState]
+                      && this.states[this.currentState].softKeys
+                      && this.states[this.currentState].softKeys[this.lang]
+                      && this.states[this.currentState].softKeys[this.lang][2];
+    if (SoftLeft) {
+      if (SoftLeft instanceof Function) $('#SoftLeft').html(SoftLeft());
+      else                              $('#SoftLeft').html(SoftLeft);
+    }
+    if (Center) {
+      if (Center instanceof Function) $('#Center').html(Center());
+      else                              $('#Center').html(Center);
+    }
+    if (SoftRight) {
+      if (SoftRight instanceof Function) $('#SoftRight').html(SoftRight());
+      else                              $('#SoftRight').html(SoftRight);
+    }
+    console.log('softKeys set');
+  },
   // -----------------------------------------------------
   // KAI.newState : method to change state
   // -----------------------------------------------------
@@ -161,17 +196,8 @@ let KAI = {
       console.log('"KAI.newState" : current state : "' + this.currentState + '"');
       this.currentState = newState;
       console.log('"KAI.newState" : new state : "' + newState + '"');
-      // Display softKeys
-      $('#SoftLeft').html(this.states[newState].softKeys
-                        && this.states[newState].softKeys[this.lang]
-                        && this.states[newState].softKeys[this.lang][0]);
-      $('#Center').html(this.states[newState].softKeys
-                        && this.states[newState].softKeys[this.lang]
-                        && this.states[newState].softKeys[this.lang][1]);
-      $('#SoftRight').html(this.states[newState].softKeys
-                        && this.states[newState].softKeys[this.lang]
-                        && this.states[newState].softKeys[this.lang][2]);
-      console.log('"KAI.newState" : softKeys set');
+      // Display softKeys -----------
+      this.renderSoftKeys();
       // Display zones ----------------
       Object.keys(this.states[newState].display).forEach(function(key) {
         if (KAI.states[newState].display[key]) {

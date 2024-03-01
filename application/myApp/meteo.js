@@ -158,7 +158,7 @@ const meteo_formatData = function(response) {
       timesStructure.rain = response[key].pluie;
       timesStructure.meanWind = Math.round(response[key].vent_moyen["10m"]);
       timesStructure.maxWind = Math.round(response[key].vent_rafales["10m"]);
-
+      timesStructure.windDirection = response[key].vent_direction["10m"] % 360;
       timesStructure.humidity = Math.round(response[key].humidite["2m"]);
 			timesStructure.pressure = Math.round(response[key].pression["niveau_de_la_mer"]/100);
 		  timesStructure.cloudiness= response[key].nebulosite.totale;
@@ -205,10 +205,16 @@ const meteo_formatData = function(response) {
 				datesStructure[thisDateIndex].timesStructure.push(timesStructure);
 			}
 			else {
-				// We add the date and push the forecast for that time
-				let date = {"day":day,"month":month,"year":year,dateLabel:displayDateLabel(day,month,year),"timesStructure":[]};
-				date.timesStructure.push(timesStructure);
+        // If it is not a past day
+        const dateForCurrentForecast = new Date(year,month - 1,day);
+        const now = new Date();
+        const today = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+        if (dateForCurrentForecast.getTime() >= today.getTime()) {
+    			// We add the date and push the forecast for that time
+    			let date = {"day":day,"month":month,"year":year,dateLabel:displayDateLabel(day,month,year),"timesStructure":[]};
+    			date.timesStructure.push(timesStructure);
 				datesStructure.push(date);
+      }
 			}
 		}
 	});
@@ -260,23 +266,33 @@ const meteo_render = function(forecastData) {
           <div class="cell"><span class="{{windClass}}">{{meanWind}}</span>/<small><span class="{{windMaxClass}}">{{maxWind}}</span> km/h</small></div>
       </div>
     {{/.}}
-    <center><i class="fas fa-chevron-circle-down"></i></center>
   `;
   const template_page2 = `
-    <center><i class="fas fa-chevron-circle-up"></i></center>
+    <div class="row">
+      <div class="cell"></div>
+      <div class="cell"><small>hum.</small></div>
+      <div class="cell"><small>pression</small></div>
+      <div class="cell"><small>neb.</small></div>
+      <div class="cell"><small>vent</small></div>
+      <div class="cell"></div>
+    </div>
     {{#.}}
       <div class="row">
   		  <div class="cell">{{hour}}h</div>
   			<div class="cell">{{humidity}}<small> %</small></div>
   			<div class="cell">{{pressure}}<small> hPa</small></div>
   			<div class="cell">{{cloudiness}}<small>%</small></div>
+        <div class="cell">{{windDirection}}<small>°</small></div>
+        <div class="cell">
+          {{#snowRisk}}<i class="fas fa-snowflake"></i>{{/snowRisk}}
+        </div>
   	  </div>
     {{/.}}`
   // We apply data to it if available
   if (forecastData[dayIndex] && forecastData[dayIndex].timesStructure) {
     // const html = mustache.render(template_page1,forecastData[dayIndex].timesStructure);
-    $("#meteo_page1").html(mustache.render(template_page1,forecastData[dayIndex].timesStructure));
-    $("#meteo_page2").html(mustache.render(template_page2,forecastData[dayIndex].timesStructure));
+    $("#meteo_page1_data").html(mustache.render(template_page1,forecastData[dayIndex].timesStructure));
+    $("#meteo_page2_data").html(mustache.render(template_page2,forecastData[dayIndex].timesStructure));
     $("#dateLabel").html(forecastData[dayIndex].dateLabel);
   };
 }

@@ -25,7 +25,7 @@ L'écran fait 240x320 pixels.
 
 /* Forecast display */
 
-#meteo_page1,#meteo_page2 {display:table;margin-top:5px;color:#000000;font-size: 16px;}
+.table {display:table;color:#000000;font-size: 16px;}
 .row {display:table-row;padding-left:2px;padding-right:2px;min-height:22px;min-height:23px;}
 .cell{display:table-cell;padding-left:2px;padding-right:2px;}
 .cellData {display:table-cell;padding-left:2px;padding-right:2px;}

@@ -17,7 +17,12 @@ This application displays the meteo in different cities that can be edited in th
 }
 ```
 
-The application gets data from `https://www.infoclimat.fr/api-previsions-meteo.html?id=2988507&cntry=FR`.
+The application gets data from `https://www.infoclimat.fr/api-previsions-meteo.html?id=2988507&cntry=FR`. Before using the application, you must create credentials () and create a `key.js` file in the `application/myApp` directory containing the following code :
+
+```
+const key = "BhxTRAN9VHZSf1RjUiRReAVtVWBcKggvBnoGZQ9qUi9UPwBhAWFXMVQ6AH1XeFFnVntSMV5lUGBQO1IqAXMEZQZsUz8DaFQzUj1UMVJ9UXoFK1U0XHwILwZtBmMPfFIwVDUAZgF8VzdUOQBlV3lRYFZ6Ui1eYFBvUDNSPAFoBGAGYlM2A2FUNFIiVClSZFFgBWNVMVxrCGMGMwZpD2JSOVQ3ADABa1c0VCUAYFdgUWRWZVI0XmBQaFA6UioBcwQeBhZTKgMgVHRSaFRwUn9RMAVoVWE%3D";
+const code = "81ac7230c59304d35707d2716a12c9ae";
+```
 
 The main screen gives the meteo feeling, temperature, rain quantity and mean/max wind speed :
 

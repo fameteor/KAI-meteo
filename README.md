@@ -1,6 +1,6 @@
 # KaiOs meteo
 
-This application displays the meteo in different cities that can be edited in the `/sdcard1/apps/meteo/config.json` file :
+This application (tested on Nokia 8110 4g) displays the meteo in different cities that can be edited in the telephone SDcard : `/sdcard1/apps/meteo/config.json` file :
 
 ```
 {
@@ -24,7 +24,7 @@ const key = "BhxTRAN9VHZSf1RjUiRReAVtVWBcKggvBnoGZQ9qUi9UPwBhAWFXMVQ6AH1XeFFnVnt
 const code = "81ac7230c59304d35707d2716a12c9ae";
 ```
 
-The main screen gives the meteo feeling, temperature, rain quantity and mean/max wind speed :
+The main screen gives the meteo feeling icon, temperature, rain quantity and mean/max wind speed :
 
 ![main screen](screen_copies/main_screen.png)  
 

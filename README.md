@@ -36,11 +36,15 @@ The `ArrowUp` key gives access back to the main screen
 
 The forecast date can be choosen with the `SoftRight` or `SoftLeft` keys :
 
-![waiting screen](screen_copies/nextDate_screen.png)  
+![next date screen](screen_copies/nextDate_screen.png)  
 
-The city can be choosen with the `ArrowLeft` or `ArrowRight` keys :
+The city can be choosen with the `ArrowLeft` or `ArrowRight` keys, a waiting screen appears :
 
-![waiting screen](screen_copies/nextCity_screen.png)  
+![waiting screen](screen_copies/waiting_screen.png)  
+
+to get the data for the next city :
+
+![next city screen](screen_copies/nextCity_screen.png)  
 
 
 # Next versions

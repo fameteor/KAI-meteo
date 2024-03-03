@@ -4,7 +4,7 @@
 const KAI = {
   // KAI lib Version
   //------------------------------------------------------
-  version : "V1.0.0",
+  version : "V1.0.1",
 
   // Current state value
   // -----------------------------------------------------
@@ -189,6 +189,7 @@ const KAI = {
     }
     else {
       // We coldStart the app
+      KAI.spinner.off(); // Initial spinner hide (spinner bug)
       this.coldStart();
     }
 

@@ -42,7 +42,7 @@ let displayDateLabel = function(day,month,year) {
 // Get the translations from corresponding word in that PONS dictionnary
 // ----------------------------------------------------
 
-function meteor_getData(location) {
+function meteo_getData(location) {
   return new Promise(function (resolve, reject) {
     // If the browser access to Internet --------------
     if (navigator.onLine) {

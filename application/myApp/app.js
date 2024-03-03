@@ -1,22 +1,31 @@
 // Variables initialisation ----------------------
 let forecastData = [];
 let dayIndex = 0;
+let citiesListOptions = {
+	"selectedItemIdPrefix" : 		"citiesListOptions",
+	"targetDomSelector" : 			"#citiesList"
+}
+
+let citiesList = {};
+
+// -----------------------------------------------
+// Global functions
+// -----------------------------------------------
 const nextDay = function() {
 	if (dayIndex < (forecastData.length -1)) dayIndex +=1;
 }
 
+// -----------------------------------------------
 const previousDay = function() {
 	if (dayIndex !== 0)  dayIndex -=1;
 }
 
 // -----------------------------------------------
-// Global functions
-// -----------------------------------------------
 const displayMeteoForSelectedCity = function() {
 	// Change the application title
 	KAI.setAppTitle("Météo " + citiesList.currentItem().choiceList_label);
 	// Get the meteo and display it
-	meteor_getData(citiesList.currentItem().location)
+	meteo_getData(citiesList.currentItem().location)
     .then(function (response) {
       // We stop the spinner
       KAI.spinner.off();
@@ -93,16 +102,13 @@ KAI.addState("meteo_page1", {
 			KAI.renderSoftKeys();
 			meteo_render(forecastData);
 		},
-		'keyup.Enter': function(event) {
-      KAI.newState('citiesList');
-		},
     'keyup.SoftRight': function(event) {
 			nextDay();
 			KAI.renderSoftKeys();
 			meteo_render(forecastData);
 		},
     'window.focus': function(event) {
-      warmStartup();
+      KAI.warmStart();
 		}
 	}
 });
@@ -152,148 +158,64 @@ KAI.addState("meteo_page2", {
 			KAI.renderSoftKeys();
 			meteo_render(forecastData);
 		},
-		'keyup.Enter': function(event) {
-      KAI.newState('citiesList');
-		},
     'keyup.SoftRight': function(event) {
 			nextDay();
 			KAI.renderSoftKeys();
 			meteo_render(forecastData);
 		},
     'window.focus': function(event) {
-      warmStartup();
+      KAI.warmStart();
 		}
 	}
 });
 
 // -----------------------------------------------
-// States citiesList
+// APP config and start
 // -----------------------------------------------
-KAI.addState("citiesList", {
-  softKeys : {fr : ['actions','ajouter','sélect.']},
-  display : {
-		'div#meteo' : false,
-		'div#meteo_page1' : false,
-		'div#meteo_page2' : false,
-    'div#citiesList': true,
-    'div#addCity': false,
-    'div#actions': false
-  },
-  afterStateChange : function() {
-		citiesList.generateHtml();
-  },
-	events : {
-		'keyup.ArrowUp': function(event) {
-			citiesList.previous();
-		},
-		'keyup.ArrowDown': function(event) {
-			citiesList.next();
-		},
-		'keyup.SoftLeft': function(event) {
-
-		}
-		,
-		'keyup.Backspace': function(event) {
-			event.preventDefault();
-			KAI.newState('meteo_page1');
-			event.stopPropagation();
-		},
-    'window.focus': function(event) {
-      warmStartup();
-		}
-
-	}
-});
-
-
-// Dictionnaries option list creation ----------------
-const defaultCities = [
-	{
-		"choiceList_label":"ici",
-		"location":"46.5891712,15.0046327",
-		choiceList_type:"BOOLEAN"
-		// choiceList_icon:"fas fa-people-arrows",
-		// choiceList_infos:"essai infos",
-		// choiceList_value:true, // read only property : if choiceList_type === "BOOLEAN", this is the value of checkbox : true if checked, otherwise false
-		// choiceList_itemNumbered:"DOWN"  // UP or DOWN
-		// choiceList_itemNumber : read only property
-	},
-	{
-		"choiceList_label":"au Perrier",
-		"location":"46.8192286,-1.995014",
-		choiceList_type:"BOOLEAN"
-	},
-	{
-		"choiceList_label":"à Nantes",
-		"location":"47.2383171,-1.6302673",
-		choiceList_type:"BOOLEAN"
-	},
-	{
-		"choiceList_label":"à Dournazac",
-		"location":"45.6330841,0.8911268",
-		choiceList_type:"BOOLEAN"
-	},
-	{
-		"choiceList_label":"à Orléans",
-		"location":"47.8735097,1.8419973",
-		choiceList_type:"BOOLEAN"
-	},
-	{	"choiceList_label":"à Paris",
-		"location":"48.8589101,2.3119547",
-		choiceList_type:"BOOLEAN"
-	}
-];
-
-
-
-let citiesListOptions = {
-	"selectedItemIdPrefix" : 		"citiesListOptions",
-	"targetDomSelector" : 			"#citiesList"
-}
-
-let citiesList;
-
-// State machine initialisation ----------------------
-const appOptions = {
-  KAI_appTitle: "Météo"
-};
-
-// Cold and warm startup ----------------
-const warmStartup = function() {
-	// We come back to the first day (today)
-	dayIndex = 0;
-	displayMeteoForSelectedCity();
-	KAI.newState('meteo_page1');
-}
-
-// Cold startup
 window.onload = function() {
-	KAI.init(appOptions);
-	KAI.spinner.on("Chargement de la configuration en cours...");
-	KAI.config.readFromSD()
-    .then(function (config) {
-			KAI.spinner.off();
-			// KAI.toastr.info(JSON.stringify(config));
-			if ("cities" in config) {
-				citiesList = new KAI.choiceList(config.cities,citiesListOptions);
-				warmStartup();
+	KAI.init({
+	  options: {
+			appTitle: 						"Météo",
+			appVersion: 					"V1.0.0",
+			lang: 								'fr',
+			loadConfigFromSD: 		true,				// Compulsory : Boolean
+		  configFilePath: 			"/sdcard1/apps/meteo/config.json",	// Compulsory if loadConfigFromSD true
+		},
+		defaultConfig: {					// No function, must be JSON.stringable
+			cities: [
+				{
+					location:"46.8192286,-1.995014",
+					choiceList_label:"au Perrier",
+					choiceList_type:"BOOLEAN"
+				},
+			]
+	  },
+		coldStart: function() {
+			// Here config is loaded (config.loadError object available)
+			if (KAI.configLoadError) {
+				KAI.toastr.warning("Impossible de lire la config sur la carte SD")
+				// We start with default values
+				citiesList = new KAI.choiceList(KAI.config.cities,citiesListOptions);
+				console.log("citiesList intialized");
+				KAI.warmStart();
 			}
 			else {
-				// We start with the default value
-				citiesList = new KAI.choiceList(defaultCities,citiesListOptions);
-				warmStartup();
+				citiesList = new KAI.choiceList(KAI.config.cities,citiesListOptions);
+				console.log("citiesList intialized");
+				KAI.warmStart();
 			}
 
-    })
-    .catch(function (err) {
-			KAI.spinner.off();
-      // KAI.toastr.warning(err.statusText);
-			// We start with default values
-			citiesList = new KAI.choiceList(defaultCities,citiesListOptions);
-			warmStartup();
-    });
+			console.log("coldStart done")
+	  },
+	  warmStart: function() {
+			// Here config is loaded
+			// We come back to the first day (today)
+			dayIndex = 0;
+			displayMeteoForSelectedCity();
+			KAI.newState('meteo_page1');
+	  }
+	});
 
-
+	console.log("app.js launched");
 };
-
 console.log("app.js loaded");

@@ -1,54 +1,80 @@
-// ------------------------------------
+
 // KAI Object
-// ------------------------------------
+// -------------------------------------------------------
+const KAI = {
+  // KAI lib Version
+  //------------------------------------------------------
+  version : "V1.1.0",
 
-
-let KAI = {
-  // -----------------------------------------------------
-  lang: 'fr',
+  // Current state value
   // -----------------------------------------------------
   currentState:'',
+
+  // Configuration data (eventually loaded from disk)
   // -----------------------------------------------------
-  vars: {},
+  config: {},
+
+  // List of all configured states
   // -----------------------------------------------------
   states:{},
 
-  // -----------------------------------------------------
-  // KAI.options
+  // Global events, triggered ? BEFORE AFTER INSTEAD ? state events
+  //------------------------------------------------------
+  events:{},
+
+  // Options
   // -----------------------------------------------------
   options:{
-    KAI_appTitle:               "my app",
-    KAI_appLayout: {
-      KAI_displayOrientation :  "portrait", // 'portait' or 'landscape'
-      KAI_displayStatus:        true,
-      KAI_displayAppTitle:      true
+    appTitle:               "my app",
+    appVersion: 					  "To be defined",
+    lang:                   'fr',
+    loadConfigFromSD: 		  false,
+    configFilePath: 			   "To be defined",
+    appLayout: {
+      displayOrientation :  "portrait", // 'portait' or 'landscape'
+      displayStatus:        true,
+      displayAppTitle:      true
     }
   },
 
+  // configLoadError : if error during config loading
   // -----------------------------------------------------
+  configLoadError: false,
+
+  // Function called when the app is lauched
+  // -----------------------------------------------------
+  coldStart: function() {
+
+  },
+
+  // Function called when the app is restarted by already in memory
+  // -----------------------------------------------------
+  warmStart: function() {
+
+  },
+
   // KAI.setAppTitle : set the title of the application
   // -----------------------------------------------------
-  setAppTitle: function(KAI_appTitle) {
-    if (this.options && this.options.KAI_appTitle) {
-      if (KAI_appTitle) this.options.KAI_appTitle = KAI_appTitle;
-      console.log(this.options.KAI_appTitle)
-      $("#KAI_appTitle").html(this.options.KAI_appTitle);
+  setAppTitle: function(appTitle) {
+    if (this.options && this.options.appTitle) {
+      if (appTitle) this.options.appTitle = appTitle;
+      console.log('"setAppTitle" : ' + this.options.appTitle);
+      $("#KAI_appTitle").html(this.options.appTitle);
     }
   },
 
-  // -----------------------------------------------------
   // KAI.setAppLayout : displays the right screen layaout
   // -----------------------------------------------------
-  setAppLayout: function(KAI_appLayout) {
-    if (  this.options && this.options.KAI_appLayout) {
+  setAppLayout: function(appLayout) {
+    if (  this.options && this.options.appLayout) {
       // Set option value if provided
-      if (KAI_appLayout) {
-        Object.assign(this.options.KAI_appLayout, KAI_appLayout);
+      if (appLayout) {
+        Object.assign(this.options.appLayout, appLayout);
       }
-      console.log(this.options.KAI_appLayout)
+      console.log(this.options.appLayout)
       //We calculate the appHeight and set the correct layout Set CSS
       let appHeight;
-      switch (this.options.KAI_appLayout.KAI_displayOrientation) {
+      switch (this.options.appLayout.displayOrientation) {
         case 'portrait' :
           appHeight = 320;
           // We set the orientation if not correct
@@ -62,10 +88,10 @@ let KAI = {
             if (!screen.orientation.type.includes('landscape')) screen.orientation.lock('landscape-primary');
           break;
       }
-      if (this.options.KAI_appLayout.KAI_displayStatus){
+      if (this.options.appLayout.displayStatus){
         appHeight -= 25;
       }
-      if (this.options.KAI_appLayout.KAI_displayAppTitle){
+      if (this.options.appLayout.displayAppTitle){
         $("#KAI_header").show();
         appHeight -= 20;
       }
@@ -80,18 +106,21 @@ let KAI = {
     }
   },
 
-  // -----------------------------------------------------
   // KAI.init
   // -----------------------------------------------------
-  init: function(options) {
-    // We merge the options properties
-    Object.assign(this.options, options);
-    // We launch the initialisation functions
+  init: function(appData) {
+    // We merge the properties ---------------------------
+    if (appData.options) Object.assign(this.options, appData.options);
+    if (appData.defaultConfig) Object.assign(this.config, appData.defaultConfig);
+    if (appData.coldStart) this.coldStart = appData.coldStart;
+    if (appData.warmStart) this.warmStart = appData.warmStart;
+    // We launch the initialisation functions ------------
     this.setAppTitle();
     this.setAppLayout();
-    // Keyboard management ------------------------
+    // Keyboard and event management ---------------------
     const minDeltaBetweenKeys = 200; // In ms
     let lastKeyTs = new Date().getTime();
+    const that = this;
     document.addEventListener("keyup", event => {
       const KAI_event = "keyup." + event.key;
     	console.log("\"" + KAI_event + "\" event received");
@@ -114,11 +143,21 @@ let KAI = {
         ];
         if (specificKeyEvents.includes(KAI_event)) {
           // Execute KAI_event callback for that state
-          this.callEventFunction(KAI_event,event);
+          that.callEventFunction(KAI_event,event);
         }
         else {
+          // if "Call" pressed, display KAI lib version
+          if ( event.key === "Call") {
+            console.log("version");
+            that.toastr.info( "KAI framework : "
+                              + that.version
+                              + "<br/>"
+                              + "App : "
+                              + that.options.appVersion);
+          }
+
           // Execute "keyup.Default" callback for that state
-          this.callEventFunction("keyup.Default",event);
+          that.callEventFunction("keyup.Default",event);
         }
       }
       else {
@@ -132,13 +171,34 @@ let KAI = {
     window.addEventListener("focus", (event) => {
       this.callEventFunction("window.focus",event);
     });
+    // We read the config on SD card if requested --------
+    if (this.options.loadConfigFromSD && this.options.configFilePath) {
+      KAI.spinner.on("Chargement de la configuration en cours...");
+    	KAI.SD.readJsonFile(this.options.configFilePath)
+        .then(function (config) {
+    			KAI.spinner.off();
+          // We overwrite the default config
+    			if (config) KAI.config = config;
+    			KAI.coldStart();
+        })
+        .catch(function (err) {
+    			KAI.spinner.off();
+          KAI.configLoadError = err;
+    			KAI.coldStart();
+        });
+    }
+    else {
+      // We coldStart the app
+      this.coldStart();
+    }
+
+
     console.log('"KAI.init" done.')
   },
 
-  // -----------------------------------------------------
   // KAI.spinner
   // -----------------------------------------------------
-  "spinner" : {
+  spinner : {
     "on": function(text) {
       $("#KAI_spinner").show();
       // If some text is provided, we write it in the spinner
@@ -151,27 +211,25 @@ let KAI = {
     }
   },
 
-
-  // -----------------------------------------------------
-  // KAI.renderSoftKeys : method to change state
+  // KAI.renderSoftKeys : method to dispaly the softkeys
   // -----------------------------------------------------
   renderSoftKeys: function() {
     // Display softKeys
     const SoftLeft =  this.states
                       && this.states[this.currentState]
                       && this.states[this.currentState].softKeys
-                      && this.states[this.currentState].softKeys[this.lang]
-                      && this.states[this.currentState].softKeys[this.lang][0];
+                      && this.states[this.currentState].softKeys[this.options.lang]
+                      && this.states[this.currentState].softKeys[this.options.lang][0];
     const Center =    this.states
                       && this.states[this.currentState]
                       && this.states[this.currentState].softKeys
-                      && this.states[this.currentState].softKeys[this.lang]
-                      && this.states[this.currentState].softKeys[this.lang][1];
+                      && this.states[this.currentState].softKeys[this.options.lang]
+                      && this.states[this.currentState].softKeys[this.options.lang][1];
     const SoftRight = this.states
                       && this.states[this.currentState]
                       && this.states[this.currentState].softKeys
-                      && this.states[this.currentState].softKeys[this.lang]
-                      && this.states[this.currentState].softKeys[this.lang][2];
+                      && this.states[this.currentState].softKeys[this.options.lang]
+                      && this.states[this.currentState].softKeys[this.options.lang][2];
     if (SoftLeft) {
       if (SoftLeft instanceof Function) $('#SoftLeft').html(SoftLeft());
       else                              $('#SoftLeft').html(SoftLeft);
@@ -184,9 +242,9 @@ let KAI = {
       if (SoftRight instanceof Function) $('#SoftRight').html(SoftRight());
       else                              $('#SoftRight').html(SoftRight);
     }
-    console.log('softKeys set');
+    console.log('"KAI.renderSoftKeys" info : softKeys set');
   },
-  // -----------------------------------------------------
+
   // KAI.newState : method to change state
   // -----------------------------------------------------
   newState: function(newState) {
@@ -222,7 +280,6 @@ let KAI = {
     }
   },
 
-  // -----------------------------------------------------
   // KAI.addState : method to add a state to configuration
   // -----------------------------------------------------
   addState: function(name,stateObject) {
@@ -241,7 +298,6 @@ let KAI = {
     else console.log('"KAI.addState" error : "KAI" do not have a "states" property.');
   },
 
-  // -----------------------------------------------------
   // These shoud be private functions
   // -----------------------------------------------------
   callEventFunction : function(KAI_event,jsEvent) {
@@ -269,35 +325,223 @@ let KAI = {
     }
     else console.error('- there is no KAI.states object or no KAI.states for current state : ' + KAI.currentState);
     console.log("------------- END EVENT -------------");
+  },
+
+
+  // KAI.toastr
+  // -----------------------------------------------------------------
+  toastr : {
+  	info : function (text) {
+  		$("#toastrMsg").html('<center><i class="fas fa-info-circle"></i><br/>' + text + '</center>');
+  		$("#toastr").attr("class","visible");
+  		setTimeout(function(){ $("#toastr").attr("class","hidden"); }, 2000);
+  	},
+  	warning : function (text) {
+  		$("#toastrMsg").html('<center><i class="fas fa-exclamation-circle"></i><br/>' + text + '</center>');
+  		$("#toastr").attr("class","visible");
+  		setTimeout(function(){ $("#toastr").attr("class","hidden"); }, 2000);
+  	},
+  	question : function(text) {
+  		$("#toastr").attr("class","visible");
+  		$("#toastrMsg").html('<center><i class="fas fa-question-circle"></i><br/>' + text + '</center>');
+  	},
+  	hide: function() {
+  		$("#toastr").attr("class","hidden");
+  	}
   }
 };
 
+// KAI.SD : methods to access the SDcard
+// -----------------------------------------------------
+KAI.SD = {
+  readJsonFile : function(filePath) {
+    return new Promise(function (resolve, reject) {
+      var sdcard = navigator.getDeviceStorage('sdcard');
+      var request = sdcard.get(filePath);
+      request.onsuccess = function () {
+        // We get a File object
+        var file = this.result;
+        console.log("Get the file: " + file.name);
+        console.log(this.result);
+        const read = new FileReader();
+        read.readAsText(file);
+        read.onloadend = function(){
+            console.log(read.result);
+            try {
+              const config = JSON.parse(read.result);
+              console.log(config);
+              resolve(config);
+            }
+            catch(e) {
+              console.log('"KAI.config.readFromSD" error.');
+              console.log(e);
+              reject({
+                err: e,
+                text: '"KAI.SD.readJsonFile" error'
+              });
+            }
+        }
+      }
+      request.onerror = function () {
+        console.warn("Unable to get the file: " + this.error);
+        reject({
+          err: this.error,
+          text: '"KAI.SD.readJsonFile" error'
+        });
+      }
+    });
+  },
+  writeConfigToSD : function(filePath) {
+    var data = {
+      essai:2,
+      bidon : "ceci est un essai"
+    }
+    var sdcard = navigator.getDeviceStorage("sdcard");
+    var file   = new Blob([JSON.stringify(data)], {type: "text/plain"});
 
+    var request = sdcard.addNamed(file, filePath);
 
+    request.onsuccess = function () {
+      console.log('"KAI.config.writeToSD" : config "' + this.result + '" successfully writen on the SDcard');
+    }
 
+    // An error typically occur if a file with the same name already exist
+    request.onerror = function () {
+      console.error(this.error);
+      console.warn('Unable to write the file: ' + this.error);
+    }
+  }
 
+}
 
 // -----------------------------------------------------------------
-// KAI.toastr
+// KAI.choiceList
 // -----------------------------------------------------------------
-KAI.toastr = {
-	info : function (text) {
-		$("#toastrMsg").html('<center><i class="fas fa-info-circle"></i><br/>' + text + '</center>');
-		$("#toastr").attr("class","visible");
-		setTimeout(function(){ $("#toastr").attr("class","hidden"); }, 2000);
-	},
-	warning : function (text) {
-		$("#toastrMsg").html('<center><i class="fas fa-exclamation-circle"></i><br/>' + text + '</center>');
-		$("#toastr").attr("class","visible");
-		setTimeout(function(){ $("#toastr").attr("class","hidden"); }, 2000);
-	},
-	question : function(text) {
-		$("#toastr").attr("class","visible");
-		$("#toastrMsg").html('<center><i class="fas fa-question-circle"></i><br/>' + text + '</center>');
-	},
-	hide: function() {
-		$("#toastr").attr("class","hidden");
+
+KAI.choiceList = function(list,options) {
+	this.options = options;
+	this.list = list;
+	this.currentIndex = (this.options && this.options.initialSelectionIndex) ? this.options.initialSelectionIndex() : 0;
+}
+
+KAI.choiceList.prototype.verticalScrollToActiveElement = function() {
+	if ($("tr[id^=" + this.options.selectedItemIdPrefix + "].active") && $("tr[id^=" + this.options.selectedItemIdPrefix + "].active").position()) document.getElementById("dictionnariesListSelector").scrollTo({top: $("tr[id^=" + this.options.selectedItemIdPrefix + "].active").position().top, behavior: 'smooth'});
+	// Other possibiity :
+	// document.getElementById("root").scrollTo({top: this.currentIndex * 70, behavior: 'smooth'});
+}
+
+KAI.choiceList.prototype.refreshSelection = function() {
+	// Refresh selection
+	if (this.options.selectedItemIdPrefix) {
+		const that = this;
+		this.list.forEach(function(item,index) {
+			if (index === that.currentIndex) 	$("#" +  that.options.selectedItemIdPrefix + index).addClass("active");
+			else								$("#" +  that.options.selectedItemIdPrefix + index).removeClass("active");
+		});
 	}
+	// Refresh accordingly hide/show
+	if (this.options.showDomElementPrefix) {
+		const that = this;
+		this.list.forEach(function(item,index) {
+			if (index === that.currentIndex) 	$(that.options.showDomElementPrefix + index).show();
+			else								$(that.options.showDomElementPrefix + index).hide();
+		});
+	}
+	this.verticalScrollToActiveElement();
+};
+
+KAI.choiceList.prototype.currentItem = function() {
+	return this.list[this.currentIndex];
+};
+
+KAI.choiceList.prototype.next = function() {
+	if (this.currentIndex < this.list.length - 1) 	this.currentIndex += 1;
+	else 											this.currentIndex = 0;
+	this.refreshSelection();
+};
+
+KAI.choiceList.prototype.previous = function() {
+	if (this.currentIndex != 0) this.currentIndex -= 1;
+	else 						this.currentIndex = this.list.length - 1;
+	this.refreshSelection();
+};
+
+KAI.choiceList.prototype.generateHtml = function() {
+	this.refreshHTML();
+	this.refreshSelection();
+};
+
+// -----------------------------------------------------------------
+// refreshHTML
+// -----------------------------------------------------------------
+KAI.choiceList.prototype.refreshHTML = function() {
+	// Template ------------------------------------------------------
+	const template = `
+		<table>
+			{{#.}}
+				<tr id="{{id}}" class="list">
+					<td class="list">
+						{{#choiceList_icon}}
+								<label><i class="{{choiceList_icon}}"></i></label>
+							<br/>
+						{{/choiceList_icon}}
+						{{#choiceList_itemNumbered}}
+							<span class="info">{{choiceList_itemNumber}}</span>
+						{{/choiceList_itemNumbered}}
+					</td>
+					<td class="list">
+						<center>
+							<choiceList_label>{{{choiceList_label}}}</choiceList_label>
+							{{#choiceList_infos}}
+								<div class="info">{{{choiceList_infos}}}</div>
+							{{/choiceList_infos}}
+						</center>
+					</td>
+					<td class="text-center list">
+						{{#choiceList_typeIsBOOLEAN}}
+							{{#choiceList_value}}
+								<input type="checkbox" checked>
+							{{/choiceList_value}}
+							{{^choiceList_value}}
+								<input type="checkbox">
+							{{/choiceList_value}}
+						{{/choiceList_typeIsBOOLEAN}}
+						{{#choiceList_typeIsMENU}}
+							<i class="fas fa-chevron-right"></i>
+						{{/choiceList_typeIsMENU}}
+					</td>
+				</tr>
+			{{/.}}
+		</table>
+	`;
+	// data creation -------------------------------------------------
+	that = this;
+	const data = this.list.map(function(element,index) {
+		let newElement = {};
+		newElement.id = that.options.selectedItemIdPrefix + index;
+		newElement.choiceList_label = (element.choiceList_label instanceof Function) ? element.choiceList_label() : element.choiceList_label;
+		newElement.choiceList_icon = element.choiceList_icon;
+		newElement.choiceList_type = element.choiceList_type;
+		newElement.choiceList_value = element.choiceList_value;
+		newElement.choiceList_infos = (element.choiceList_infos instanceof Function) ? element.choiceList_infos() : element.choiceList_infos;
+		newElement.choiceList_typeIsBOOLEAN = (element.choiceList_type === "BOOLEAN");
+		newElement.choiceList_typeIsMENU = (element.choiceList_type === "MENU");
+		newElement.choiceList_typeIsNONE = (element.choiceList_type === "NONE");
+		if (element.choiceList_itemNumbered) {
+			if (element.choiceList_itemNumbered === "UP") {
+				newElement.choiceList_itemNumbered = element.choiceList_itemNumbered;
+				newElement.choiceList_itemNumber = index + 1;
+			}
+			if (element.choiceList_itemNumbered === "DOWN") {
+				newElement.choiceList_itemNumbered = element.choiceList_itemNumbered;
+				newElement.choiceList_itemNumber = that.list.length - index;
+			}
+		}
+		return newElement;
+	});
+	console.log(data);
+	// Rendering -----------------------------------------------------
+	$(this.options.targetDomSelector).html(mustache.render(template,data));
 }
 
 

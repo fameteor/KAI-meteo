@@ -1,6 +1,6 @@
 # KaiOs meteo
 
-This application display the meteo in different cities that can be choosen by éditing the `/sdcard1/apps/meteo/config.json` file :
+This application displays the meteo in different cities that can be edited in the `/sdcard1/apps/meteo/config.json` file :
 
 ```
 {
@@ -16,26 +16,29 @@ This application display the meteo in different cities that can be choosen by é
   ]
 }
 ```
+
+The application gets data from `https://www.infoclimat.fr/api-previsions-meteo.html?id=2988507&cntry=FR`.
+
 The main screen gives the meteo feeling, temperature, rain quantity and mean/max wind speed :
 
 ![main screen](screen_copies/main_screen.png)  
 
-The second screen (accessible with the `ArrowDown` key) gives thehumidity, pressure, global cloudiness, wind direction and snow risk :
+The second screen (accessible with the `ArrowDown` key) gives the humidity, pressure, global cloudiness, wind direction and snow risks :
 
 ![second screen](screen_copies/second_screen.png)  
 
-The `ArrowDown` key gives access back to the main screen
+The `ArrowUp` key gives access back to the main screen
 
-The forecast date can be choosen with the `SoftRight` and `SoftLeft` keys :
+The forecast date can be choosen with the `SoftRight` or `SoftLeft` keys :
 
 ![waiting screen](screen_copies/nextDate_screen.png)  
 
-The city can be choosen with the `ArrowLeft` and `ArrowRight` keys :
+The city can be choosen with the `ArrowLeft` or `ArrowRight` keys :
 
 ![waiting screen](screen_copies/nextCity_screen.png)  
 
 
-#TBD
+# Next versions
 
 - If snow, make snow icon blinking in alternate with cloud icon
 - Add an interface :

@@ -1,7 +1,7 @@
 {
   "version": "0.0.1",
-  "name": "Test",
-  "description": "Test",
+  "name": "Météo",
+  "description": "Météo",
   "type": "privileged",
   "permissions": {
     "systemXHR": {},

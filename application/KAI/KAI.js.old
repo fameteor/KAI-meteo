@@ -4,7 +4,7 @@
 const KAI = {
   // KAI lib Version
   //------------------------------------------------------
-  version : "V1.0.2",
+  version : "V1.0.1",
 
   // Current state value
   // -----------------------------------------------------
@@ -29,9 +29,7 @@ const KAI = {
     appVersion: 					  "To be defined",
     lang:                   'fr',
     loadConfigFromSD: 		  false,
-    configFilePath: 			  "To be defined",
-    appTitleBackgroundColor:"#B700DB",
-    appTitleColor:          "#FFFFFF",
+    configFilePath: 			   "To be defined",
     appLayout: {
       displayOrientation :  "portrait", // 'portait' or 'landscape'
       displayStatus:        true,
@@ -62,13 +60,6 @@ const KAI = {
       if (appTitle) this.options.appTitle = appTitle;
       console.log('"setAppTitle" : ' + this.options.appTitle);
       $("#KAI_appTitle").html(this.options.appTitle);
-      // We set the correct app title background color if available
-      if (this.options.appTitleBackgroundColor) {
-        $("#KAI_header").css("background-color",this.options.appTitleBackgroundColor);
-      }
-      if (this.options.appTitleColor) {
-        $("#KAI_header").css("color",this.options.appTitleColor);
-      }
     }
   },
 

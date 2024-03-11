@@ -5,7 +5,8 @@
   "type": "privileged",
   "permissions": {
     "systemXHR": {},
-    "device-storage:sdcard":{ "access": "readwrite" }
+    "device-storage:sdcard":{ "access": "readwrite" },
+    "geolocation": {"description": "Get location"}
   },
   "launch_path": "/index.html",
   "icons": {
@@ -23,5 +24,6 @@
       "description": "Météo"
     }
   },
-  "default_locale": "fr-FR"
+  "default_locale": "fr-FR",
+  "theme_color": "#FF4B00"
 }

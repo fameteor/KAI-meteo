@@ -129,6 +129,19 @@ div#toastr.visible {
   opacity: 1;
 }
 
+.row-toastr {
+  display:table-row;
+  padding-left:2px;
+  padding-right:2px;
+  height:60px;
+}
+.cell-toastr {
+  display:table-cell;
+  padding-left:2px;
+  padding-right:2px;
+  vertical-align: middle;
+}
+
 /* For lists */
 tr.list {
 	background-color : #EEEEEE;

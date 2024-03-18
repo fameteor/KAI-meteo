@@ -115,3 +115,10 @@ L'écran fait 240x320 pixels.
 .error {
 	background-color:#F9CAC5;
 }
+
+#editPlaces, #actions {
+	height:210px;
+	background-color: #EEEEEE;
+	color:#000080;
+	overflow-y:auto;
+}

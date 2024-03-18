@@ -4,7 +4,7 @@
 const KAI = {
   // KAI lib Version
   //------------------------------------------------------
-  version : "V1.0.2",
+  version : "V1.0.3",
 
   // Current state value
   // -----------------------------------------------------
@@ -55,13 +55,40 @@ const KAI = {
 
   },
 
-  // KAI.setAppTitle : set the title of the application
+  // Function that should be private : return a value or the value result of a function
   // -----------------------------------------------------
-  setAppTitle: function(appTitle) {
-    if (this.options && this.options.appTitle) {
-      if (appTitle) this.options.appTitle = appTitle;
-      console.log('"setAppTitle" : ' + this.options.appTitle);
-      $("#KAI_appTitle").html(this.options.appTitle);
+  valOrFctVal: function(variable) {
+    if (variable instanceof Function)   return variable();
+    else                                return variable;
+  },
+
+  // KAI.renderAppTitle : set the title of the application
+  // -----------------------------------------------------
+  renderAppTitle: function() {
+    // If there is an option appTitle in the state, it will overwrite the global appTitle
+    if (   this.currentState
+        && this.states
+        && this.states.hasOwnProperty(this.currentState)
+        && this.states[this.currentState].options){
+      if (this.states[this.currentState].options.appTitle) {
+        const appTitle = this.states[this.currentState].options.appTitle;
+        $("#KAI_appTitle").html(this.valOrFctVal(appTitle));
+      }
+      // We set the correct app title background color if available
+      if (this.states[this.currentState].options.appTitleBackgroundColor) {
+        $("#KAI_header").css("background-color",this.states[this.currentState].options.appTitleBackgroundColor);
+      }
+      if (this.states[this.currentState].options.appTitleColor) {
+        $("#KAI_header").css("color",this.states[this.currentState].options.appTitleColor);
+      }
+      console.log("state options title applied");
+    }
+    // Otherwise the global appTitle applies
+    else {
+      if (this.options && this.options.appTitle) {
+        const appTitle = this.options.appTitle;
+        $("#KAI_appTitle").html(this.valOrFctVal(appTitle));
+      }
       // We set the correct app title background color if available
       if (this.options.appTitleBackgroundColor) {
         $("#KAI_header").css("background-color",this.options.appTitleBackgroundColor);
@@ -69,7 +96,11 @@ const KAI = {
       if (this.options.appTitleColor) {
         $("#KAI_header").css("color",this.options.appTitleColor);
       }
+      console.log("global options title applied");
     }
+
+
+
   },
 
   // KAI.setAppLayout : displays the right screen layaout
@@ -124,7 +155,7 @@ const KAI = {
     if (appData.coldStart) this.coldStart = appData.coldStart;
     if (appData.warmStart) this.warmStart = appData.warmStart;
     // We launch the initialisation functions ------------
-    this.setAppTitle();
+    this.renderAppTitle();
     this.setAppLayout();
     // Keyboard and event management ---------------------
     const minDeltaBetweenKeys = 200; // In ms
@@ -246,18 +277,11 @@ const KAI = {
                       && this.states[this.currentState].softKeys
                       && this.states[this.currentState].softKeys[this.options.lang]
                       && this.states[this.currentState].softKeys[this.options.lang][2];
-    if (SoftLeft) {
-      if (SoftLeft instanceof Function) $('#SoftLeft').html(SoftLeft());
-      else                              $('#SoftLeft').html(SoftLeft);
-    }
-    if (Center) {
-      if (Center instanceof Function) $('#Center').html(Center());
-      else                              $('#Center').html(Center);
-    }
-    if (SoftRight) {
-      if (SoftRight instanceof Function) $('#SoftRight').html(SoftRight());
-      else                              $('#SoftRight').html(SoftRight);
-    }
+
+    $('#SoftLeft').html(this.valOrFctVal(SoftLeft));
+    $('#Center').html(this.valOrFctVal(Center));
+    $('#SoftRight').html(this.valOrFctVal(SoftRight));
+
     console.log('"KAI.renderSoftKeys" info : softKeys set');
   },
 
@@ -270,7 +294,9 @@ const KAI = {
       console.log('"KAI.newState" : current state : "' + this.currentState + '"');
       this.currentState = newState;
       console.log('"KAI.newState" : new state : "' + newState + '"');
-      // Display softKeys -----------
+      // Display title ----------------
+      this.renderAppTitle();
+      // Display softKeys -------------
       this.renderSoftKeys();
       // Display zones ----------------
       Object.keys(this.states[newState].display).forEach(function(key) {
@@ -347,15 +373,63 @@ const KAI = {
   // KAI.toastr
   // -----------------------------------------------------------------
   toastr : {
+    infoMsgs:[],
+    template: `
+      {{#.}}
+        <div class="row-toastr">
+          <div class="cell-toastr">
+            {{#isWarning}}
+              <i class="fas fa-exclamation-circle"></i>
+            {{/isWarning}}
+            {{^isWarning}}
+              <i class="fas fa-info-circle"></i>
+            {{/isWarning}}
+          </div>
+          <div class="cell-toastr">
+            {{{text}}}
+          </div>
+        </div>
+      {{/.}}
+    `,
+    displayInfos: function() {
+      $("#toastrMsg").html(mustache.render(this.template,this.infoMsgs));
+      $("#toastr").attr("class","visible");
+    },
   	info : function (text) {
-  		$("#toastrMsg").html('<center><i class="fas fa-info-circle"></i><br/>' + text + '</center>');
-  		$("#toastr").attr("class","visible");
-  		setTimeout(function(){ $("#toastr").attr("class","hidden"); }, 2000);
+      const that = this;
+      // We add the message to the list with its index
+      that.infoMsgs.push({text:text,isWarning:false});
+      // We display it
+      that.displayInfos();
+  		setTimeout(
+        function() {
+          // After 2 seconds, we delete the first left message and display the others
+          that.infoMsgs.shift();
+          // If empty, we hide the toastr
+          if (that.infoMsgs.length === 0) $("#toastr").attr("class","hidden");
+          // Else, we display the other msgs
+          else                            that.displayInfos();
+        },
+        2000
+      );
   	},
   	warning : function (text) {
-  		$("#toastrMsg").html('<center><i class="fas fa-exclamation-circle"></i><br/>' + text + '</center>');
-  		$("#toastr").attr("class","visible");
-  		setTimeout(function(){ $("#toastr").attr("class","hidden"); }, 2000);
+      const that = this;
+      // We add the message to the list with its index
+      that.infoMsgs.push({text:text,isWarning:true});
+      // We display it
+      that.displayInfos();
+  		setTimeout(
+        function() {
+          // After 2 seconds, we delete the first left message and display the others
+          that.infoMsgs.shift();
+          // If empty, we hide the toastr
+          if (that.infoMsgs.length === 0) $("#toastr").attr("class","hidden");
+          // Else, we display the other msgs
+          else                            that.displayInfos();
+        },
+        2000
+      );
   	},
   	question : function(text) {
   		$("#toastr").attr("class","visible");
@@ -483,9 +557,18 @@ KAI.choiceList = function(list,options) {
 }
 
 KAI.choiceList.prototype.verticalScrollToActiveElement = function() {
-	if ($("tr[id^=" + this.options.selectedItemIdPrefix + "].active") && $("tr[id^=" + this.options.selectedItemIdPrefix + "].active").position()) document.getElementById("dictionnariesListSelector").scrollTo({top: $("tr[id^=" + this.options.selectedItemIdPrefix + "].active").position().top, behavior: 'smooth'});
-	// Other possibiity :
-	// document.getElementById("root").scrollTo({top: this.currentIndex * 70, behavior: 'smooth'});
+  // If the list is displayed, we get the DOM element from JQUERY
+  if ($(this.options.targetDomSelector)[0]) {
+  	if (  $("tr[id^=" + this.options.selectedItemIdPrefix + "].active")
+          && $("tr[id^=" + this.options.selectedItemIdPrefix + "].active").position()) {
+      $(this.options.targetDomSelector)[0].scrollTo({
+        top: $("tr[id^=" + this.options.selectedItemIdPrefix + "].active").position().top,
+        behavior: 'smooth'
+      });
+    	// Other possibiity :
+    	// document.getElementById("root").scrollTo({top: this.currentIndex * 70, behavior: 'smooth'});
+    }
+  }
 }
 
 KAI.choiceList.prototype.refreshSelection = function() {
